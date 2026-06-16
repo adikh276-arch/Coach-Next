@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 20% 96%;
+    --foreground: 220 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+    --primary: 255 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 14% 94%;
+    --secondary-foreground: 220 25% 10%;
+    --muted: 240 14% 92%;
+    --muted-foreground: 220 10% 46%;
+    --accent: 40 85% 58%;
+    --accent-foreground: 40 90% 12%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 16% 88%;
+    --input: 240 16% 90%;
+    --ring: 255 70% 55%;
+    --radius: 1rem;
+    --emerald: 158 64% 40%;
+    --amber: 35 92% 50%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 25% 6%;
+    --foreground: 220 20% 95%;
+    --card: 220 20% 10%;
+    --card-foreground: 220 20% 95%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 220 20% 95%;
+    --primary: 255 70% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 18% 16%;
+    --secondary-foreground: 220 20% 95%;
+    --muted: 220 14% 18%;
+    --muted-foreground: 220 10% 58%;
+    --accent: 40 85% 58%;
+    --accent-foreground: 40 90% 12%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 16% 20%;
+    --input: 220 16% 20%;
+    --ring: 255 70% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 800;
+  }
+}
+
+@layer utilities {
+  /* === Background === */
+  .bg-mesh {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, hsl(255 70% 55% / 0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 85% 85%, hsl(35 92% 50% / 0.03) 0%, transparent 60%),
+      hsl(var(--background));
+  }
+
+  /* === Header Card === */
+  .header-card {
+    @apply py-6 px-6 rounded-2xl;
+    background: hsl(var(--card));
+    border-top: 4px solid hsl(var(--primary));
+    box-shadow: 0 1px 3px hsl(220 25% 10% / 0.06);
+  }
+
+  /* === Premium Card === */
+  .premium-card {
+    @apply bg-card rounded-2xl border border-border/40;
+    box-shadow: 0 1px 3px hsl(220 25% 10% / 0.06);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .premium-card:hover {
+    box-shadow: 0 4px 20px hsl(220 25% 10% / 0.08);
+  }
+
+  /* === Score Badge === */
+  .score-badge {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl font-extrabold tabular-nums shrink-0;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* === Slider Section === */
+  .slider-section {
+    @apply pb-0;
+  }
+
+  /* === Icon Badges === */
+  .icon-badge {
+    @apply p-2.5 rounded-xl shrink-0 transition-all duration-300;
+  }
+
+  .icon-badge-emerald {
+    background: hsl(var(--emerald) / 0.1);
+    color: hsl(var(--emerald));
+  }
+
+  .icon-badge-gold {
+    background: hsl(var(--accent) / 0.1);
+    color: hsl(var(--accent));
+  }
+
+  .icon-badge-amber {
+    background: hsl(var(--amber) / 0.1);
+    color: hsl(var(--amber));
+  }
+
+  .icon-badge-red {
+    background: hsl(var(--destructive) / 0.08);
+    color: hsl(var(--destructive));
+  }
+
+  /* === Missed Buttons === */
+  .missed-btn {
+    @apply flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 border cursor-pointer;
+  }
+
+  .missed-btn-active {
+    @apply border-amber-300 bg-amber-50 text-amber-800;
+  }
+
+  .missed-btn-active-good {
+    @apply border-primary/30 bg-primary/[0.08] text-primary font-semibold;
+  }
+
+  .missed-btn-inactive {
+    @apply border-border/40 bg-card text-muted-foreground hover:border-border;
+  }
+
+  /* === Action Buttons (Insights/History) === */
+  .action-button {
+    @apply w-full px-4 py-4 flex items-center justify-center gap-2.5 text-[13px] font-semibold text-foreground rounded-2xl border border-border/30 transition-all duration-300;
+    background: hsl(var(--card));
+    box-shadow: 0 1px 3px hsl(220 25% 10% / 0.04);
+  }
+
+  .action-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px hsl(220 25% 10% / 0.08);
+    border-color: hsl(var(--primary) / 0.25);
+  }
+
+  .action-button-icon {
+    @apply p-1.5 rounded-lg transition-all duration-300;
+  }
+
+  /* === Save Button === */
+  .save-button {
+    @apply h-12 text-sm font-bold rounded-xl transition-all duration-300 text-primary-foreground tracking-wide;
+  }
+
+  .save-button-default {
+    background: hsl(var(--primary));
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.3);
+  }
+
+  .save-button-default:hover {
+    box-shadow: 0 4px 16px hsl(var(--primary) / 0.4);
+    transform: translateY(-1px);
+  }
+
+  .save-button-default:active {
+    transform: scale(0.98) translateY(0);
+  }
+
+  .save-button-saved {
+    @apply bg-primary scale-[0.98];
+  }
+
+  /* === Premium Dialog === */
+  .premium-dialog {
+    @apply bg-card border border-border/20 rounded-2xl;
+    box-shadow: 0 24px 80px -12px hsl(220 25% 10% / 0.2);
+  }
+
+  /* === Stats in Insights === */
+  .stat-card {
+    @apply p-4 rounded-xl border border-border/15;
+    background: hsl(var(--muted) / 0.3);
+  }
+
+  .stat-label {
+    @apply text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground/45 mb-1;
+  }
+
+  .stat-value {
+    @apply text-3xl font-extrabold text-foreground leading-none tabular-nums;
+  }
+
+  /* === Chart === */
+  .chart-container {
+    @apply h-48 p-3 rounded-xl border border-border/10;
+    background: hsl(var(--muted) / 0.15);
+  }
+
+  /* === Avoidance Insight Card === */
+  .avoidance-insight-card {
+    @apply p-4 rounded-xl border border-border/15;
+    background: hsl(var(--muted) / 0.25);
+  }
+
+  /* === History Entry === */
+  .history-entry {
+    @apply p-4 rounded-xl border border-border/15 transition-all duration-300;
+    background: hsl(var(--muted) / 0.2);
+  }
+
+  .history-entry:hover {
+    border-color: hsl(var(--border) / 0.4);
+    background: hsl(var(--muted) / 0.35);
+    transform: translateX(2px);
+  }
+
+  /* === Chips === */
+  .chip-selected {
+    background: hsl(var(--primary));
+    @apply text-primary-foreground border-transparent;
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
+  }
+
+  .chip-unselected {
+    @apply bg-muted/30 text-muted-foreground border-border/30;
+  }
+
+  .chip-unselected:hover {
+    @apply border-primary/20 bg-muted/50;
+  }
+
+  /* === Floating Orb === */
+  .floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: float 10s ease-in-out infinite;
+  }
+}
+
+/* === Keyframes === */
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-25px) scale(1.03); opacity: 1; }
+}
+
+@keyframes scale-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-scale-pop {
+  animation: scale-pop 0.25s ease-out;
+}
+
+.animate-check-draw {
+  animation: check-draw 0.4s ease-out forwards;
+}
+
+@keyframes check-draw {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+

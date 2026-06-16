@@ -1,0 +1,50 @@
+# Dependency directories
+coach-app/node_modules/
+coach-app/.pnp
+coach-app/.pnp.*
+coach-app/.yarn/*
+
+# Testing
+coach-app/coverage/
+
+# Next.js build output
+coach-app/.next/
+coach-app/out/
+
+# Production build output
+coach-app/build/
+
+# IDE files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Environmental variables (secrets)
+coach-app/.env*
+coach-app/.env.local
+.env
+.env.local
+
+# Logs and Debug files
+coach-app/npm-debug.log*
+coach-app/yarn-debug.log*
+coach-app/yarn-error.log*
+coach-app/.pnpm-debug.log*
+coach-app/build_error*.txt
+coach-app/build_log*.txt
+
+# Typescript build info
+coach-app/*.tsbuildinfo
+coach-app/next-env.d.ts
+
+# Local scratch directories / files
+coach-app/scratch/
+scratch/

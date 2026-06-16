@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 215 40% 97%;
+    --foreground: 220 60% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 60% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 60% 15%;
+    --primary: 220 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 220 60% 15%;
+    --muted: 220 20% 94%;
+    --muted-foreground: 220 15% 50%;
+    --accent: 175 60% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 220 70% 50%;
+    --radius: 0.75rem;
+    --chart-1: 220 70% 50%;
+    --chart-2: 175 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Coaching area card background colors */
+    --coaching-career: 220 70% 95%;
+    --coaching-executive: 195 70% 93%;
+    --coaching-wellness: 330 65% 95%;
+    --coaching-leadership: 170 60% 92%;
+    --coaching-finance: 38 75% 93%;
+    --coaching-performance: 15 70% 94%;
+    --coaching-mindset: 265 55% 94%;
+    --coaching-spiritual: 45 80% 93%;
+    --coaching-mental: 355 60% 94%;
+    --coaching-transform: 290 50% 94%;
+    --coaching-communicate: 200 65% 93%;
+    --coaching-organization: 260 50% 94%;
+    --coaching-creativity: 200 60% 94%;
+    --coaching-employee: 0 0% 94%;
+    --coaching-corporate: 210 50% 94%;
+    --coaching-confidence: 35 65% 93%;
+
+    /* Card shadows */
+    --shadow-card: 0 2px 16px -4px hsl(220 60% 20% / 0.08), 0 1px 4px -2px hsl(220 60% 20% / 0.04);
+    --shadow-card-hover: 0 8px 30px -8px hsl(220 60% 20% / 0.14), 0 2px 8px -2px hsl(220 60% 20% / 0.06);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .coaching-card-shadow {
+    box-shadow: var(--shadow-card);
+  }
+  .coaching-card-shadow-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}

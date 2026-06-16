@@ -1,0 +1,56 @@
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Check } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+
+interface SaveButtonProps {
+  onSave: () => void;
+}
+
+export default function SaveButton({ onSave }: SaveButtonProps) {
+  const [saved, setSaved] = useState(false);
+  const { t } = useTranslation();
+
+  const handleClick = useCallback(() => {
+    onSave();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }, [onSave]);
+
+  return (
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      disabled={saved}
+      className="save-ripple w-full py-4 px-6 rounded-xl font-semibold text-primary-foreground gradient-primary transition-shadow duration-200 flex items-center justify-center gap-2 text-[15px] disabled:opacity-80"
+      whileHover={{ scale: saved ? 1 : 1.02, boxShadow: 'var(--shadow-glow)' }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <AnimatePresence mode="wait">
+        {saved ? (
+          <motion.span
+            key="saved"
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Check className="w-5 h-5" />
+            {t('save.saved')}
+          </motion.span>
+        ) : (
+          <motion.span
+            key="save"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {t('save.save')}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}

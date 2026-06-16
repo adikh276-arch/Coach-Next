@@ -1,0 +1,62 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Coach Service — platform.mantracare.com/coach
+#
+# Fully independent from OCD. Both services can run simultaneously on the
+# same host because Traefik routes by PathPrefix, not by host port.
+# Neither service exposes a host port — Traefik reaches them over the
+# internal Docker network (traefik_public).
+#
+# OCD  → platform.mantracare.com/ocd  → traefik routes → ocd-container:80
+# Coach→ platform.mantracare.com/coach → traefik routes → coach-container:80
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  coach:
+    image: bunker.mantracare.com/lovable/coach:7.6
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - VITE_NEON_DATABASE_URL=${VITE_NEON_DATABASE_URL}
+
+    # ── NO host port mapping needed ───────────────────────────────────────────
+    # Traefik communicates with this container via the shared Docker network.
+    # Both OCD and Coach can use internal port 80 without conflict.
+    # ports:
+    #   - "80:80"   ← DO NOT uncomment, would conflict with OCD
+
+    networks:
+      - traefik_public
+
+    labels:
+      - "traefik.enable=true"
+
+      # ── HTTPS Router: match /coach/* and /app/coach/* ─────────────────────
+      # Uses unique name "coach" — completely separate from OCD's "ocd" router
+      - "traefik.http.routers.coach.rule=(Host(`web.mantracare.com`) || Host(`platform.mantracare.com`)) && (PathPrefix(`/app/coach`) || PathPrefix(`/coach`))"
+      - "traefik.http.routers.coach.entrypoints=websecure"
+      - "traefik.http.routers.coach.tls=true"
+
+      # ── HTTP → HTTPS Redirect Router ──────────────────────────────────────
+      # Catches any http:// requests to platform.mantracare.com/coach (or /app/coach)
+      # and issues a 301 redirect to https://. This is what fixes the Mixed Content
+      # error when web.mantracare.com embeds the iframe with an http:// URL.
+      - "traefik.http.routers.coach-http.rule=(Host(`web.mantracare.com`) || Host(`platform.mantracare.com`)) && (PathPrefix(`/app/coach`) || PathPrefix(`/coach`))"
+      - "traefik.http.routers.coach-http.entrypoints=web"
+      - "traefik.http.routers.coach-http.middlewares=coach-https-redirect"
+      - "traefik.http.middlewares.coach-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.coach-https-redirect.redirectscheme.permanent=true"
+
+      # ── Service: internal Nginx port 80 ───────────────────────────────────
+      # Both OCD and Coach use port 80 internally — no conflict because
+      # Traefik routes to each container independently over the Docker network
+      - "traefik.http.services.coach.loadbalancer.server.port=80"
+
+      # ── NO StripPrefix middleware ──────────────────────────────────────────
+      # basePath: '/coach' is baked into the Next.js build.
+      # The /coach prefix MUST be preserved for _next/ asset paths to resolve.
+
+networks:
+  traefik_public:
+    external: true   # Must already exist (shared with Traefik and OCD)
