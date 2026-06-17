@@ -2,16 +2,18 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Disable Next.js telemetry and set production env
+# Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 
-# Install dependencies
+# Install dependencies (development dependencies are required to build)
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 # Copy source
 COPY . .
+
+# Set environment to production for build optimization
+ENV NODE_ENV=production
 
 # Build
 RUN npm run build
