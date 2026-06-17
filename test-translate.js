@@ -1,4 +1,4 @@
-const apiKey = process.env.GOOGLE_TRANSLATOR_KEY || "AIzaSyCvhEf21CwHRI0F_FO_25IcaUMBwEQPwKI";
+const apiKey = process.env.GOOGLE_TRANSLATOR_KEY;
 const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
 
 async function testTranslation() {
