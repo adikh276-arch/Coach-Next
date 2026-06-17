@@ -16,6 +16,17 @@ export async function fetchUserGoals(userId: string) {
   }
 }
 
+export async function getGoals(userId: string) {
+  try {
+    const id = userIdSchema.parse(userId);
+    const rawGoals = await sql`SELECT * FROM goals WHERE user_id = ${id} ORDER BY created_at DESC`;
+    return rawGoals;
+  } catch (err) {
+    console.error('Failed to get goals:', err);
+    throw err;
+  }
+}
+
 export async function fetchGoalEntries(userId: string) {
   try {
     const id = userIdSchema.parse(userId);
@@ -31,7 +42,11 @@ export async function fetchGoalEntries(userId: string) {
 
 const addGoalSchema = z.object({
   userId: z.string(),
-  name: z.string(),
+  name: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  status: z.string().optional(),
+  deadline: z.string().optional(),
   category: z.string().default('learning'),
 });
 
@@ -39,7 +54,7 @@ export async function addGoal(payload: z.infer<typeof addGoalSchema>) {
   try {
     const p = addGoalSchema.parse(payload);
     const result = await sql`
-      INSERT INTO goals (user_id, name, category) VALUES (${p.userId}, ${p.name}, ${p.category}) RETURNING *
+      INSERT INTO goals (user_id, name, category) VALUES (${p.userId}, ${p.name || p.title || ''}, ${p.category}) RETURNING *
     `;
     return { success: true, data: result[0] };
   } catch (err) {
@@ -48,12 +63,48 @@ export async function addGoal(payload: z.infer<typeof addGoalSchema>) {
   }
 }
 
+export async function createGoal(payload: {
+  userId: string;
+  title: string;
+  description?: string;
+  status?: string;
+  deadline?: string;
+}) {
+  try {
+    const result = await sql`
+      INSERT INTO goals (user_id, name, title, description, status, deadline, category)
+      VALUES (${payload.userId}, ${payload.title}, ${payload.title}, ${payload.description || null}, ${payload.status || 'not-started'}, ${payload.deadline || null}, 'learning')
+      RETURNING *
+    `;
+    return result[0];
+  } catch (err) {
+    console.error('Failed to create goal:', err);
+    throw err;
+  }
+}
+
+export async function updateGoal(payload: { id: string; status: string; userId: string }) {
+  try {
+    const result = await sql`
+      UPDATE goals SET status = ${payload.status} WHERE id = ${payload.id} AND user_id = ${payload.userId} RETURNING *
+    `;
+    return result[0];
+  } catch (err) {
+    console.error('Failed to update goal:', err);
+    throw err;
+  }
+}
+
 const deleteGoalSchema = z.string();
 
-export async function deleteGoal(goalId: string) {
+export async function deleteGoal(goalId: string, userId?: string) {
   try {
     const id = deleteGoalSchema.parse(goalId);
-    await sql`DELETE FROM goals WHERE id = ${id}`;
+    if (userId) {
+      await sql`DELETE FROM goals WHERE id = ${id} AND user_id = ${userId}`;
+    } else {
+      await sql`DELETE FROM goals WHERE id = ${id}`;
+    }
     return { success: true };
   } catch (err) {
     console.error('Failed to delete goal:', err);

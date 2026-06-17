@@ -1,57 +1,81 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { getOrCreateUser } from "@/lib/exerciseDb";
+import React, { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { MANTRA_API } from "@/components/AuthGate";
+import { syncUser } from "@/app/actions/userActions";
 
-/**
- * HandshakeProvider — used inside coaching_areas SPA (react-router context).
- * Delegates the real auth check to sessionStorage set by AuthGate (the Next.js
- * layer). If session exists → proceeds. If not → hard redirect to login.
- *
- * Also handles DB user initialization after a successful handshake.
- */
-export const HandshakeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isReady, setIsReady] = useState(false);
-  const location = useLocation();
+export function HandshakeProvider({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    const initialize = async () => {
-      // AuthGate (the Next.js wrapper) has already validated the token and
-      // stored user_id in sessionStorage before this SPA is rendered.
-      const userId = sessionStorage.getItem("user_id");
-
-      if (userId) {
-        try {
-          await getOrCreateUser(userId);
-        } catch (e) {
-          console.error("[HandshakeProvider] DB init failed:", e);
-          // Non-fatal — still allow UI to render
-        }
-        setIsReady(true);
+    const handleAuth = async () => {
+      // 0. MOCK USER BYPASS (Localhost Testing Only)
+      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+        sessionStorage.setItem("user_id", "12345");
+        await syncUser("12345").catch(console.error);
+        setReady(true);
         return;
       }
 
-      // If somehow no user_id (AuthGate should have caught this),
-      // redirect to /coach/ so the parent app can recover.
-      window.location.replace("/coach/");
+      const token = searchParams.get("token");
+      const userId = sessionStorage.getItem("user_id");
+
+      if (userId) {
+        if (token) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("token");
+          window.history.replaceState({}, "", url.toString());
+        }
+        setReady(true);
+        return;
+      }
+
+      if (token) {
+        try {
+          const response = await fetch(MANTRA_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const newUserId = data?.user_id;
+
+            if (newUserId) {
+              sessionStorage.setItem("user_id", String(newUserId));
+              await syncUser(String(newUserId)).catch(console.error);
+
+              const url = new URL(window.location.href);
+              url.searchParams.delete("token");
+              window.history.replaceState({}, "", url.toString());
+              
+              setReady(true);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error("Handshake validation failed:", error);
+        }
+      }
+
+      window.location.href = "/coach/token/";
     };
 
-    initialize();
-    // Only run once on mount — location.search changes should NOT re-trigger
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    handleAuth();
+  }, [pathname, searchParams]);
 
-  if (!isReady) {
+  if (!ready) {
     return (
       <div className="flex flex-col h-screen w-screen items-center justify-center bg-background gap-4">
         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse">
           <div className="h-6 w-6 rounded-full bg-primary" />
         </div>
-        <p className="text-sm font-bold text-foreground animate-pulse">
-          Preparing your personal space...
-        </p>
+        <p className="text-sm font-bold text-foreground animate-pulse">Authenticating...</p>
       </div>
     );
   }
 
   return <>{children}</>;
-};
+}

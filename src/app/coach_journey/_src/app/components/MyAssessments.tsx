@@ -1,5 +1,6 @@
 "use client";
-import { Link, useNavigate } from 'react-router';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Check, Brain, Heart, Users, ChevronRight, RefreshCw, ChevronLeft } from 'lucide-react';
 import { ASSESSMENTS } from '../data/assessmentData';
 import { useAssessments } from '../context/AssessmentContext';
@@ -7,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 export function MyAssessments() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { getLatestAssessmentResult } = useAssessments();
 
   const getAssessmentStatus = (assessmentId: string) => {
@@ -25,7 +26,7 @@ export function MyAssessments() {
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate('/', { replace: true })}
+          onClick={() => router.push('/coach/coach_journey', { scroll: false })}
           className="p-2 rounded-xl hover:bg-slate-200 transition-colors text-slate-700 flex-shrink-0"
           aria-label="Go Back"
         >
@@ -50,7 +51,7 @@ export function MyAssessments() {
           
           return (
             <div key={assessment.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
-              <Link to={`/assessments/${assessment.id}`} className="group block">
+              <Link href={`/coach/coach_journey/assessments/${assessment.id}`} className="group block">
                 <div className="p-6 sm:p-8">
                   <div className="flex items-start gap-4 sm:gap-6">
                     {/* Icon */}
@@ -102,7 +103,7 @@ export function MyAssessments() {
                       })}
                     </p>
                     <Link
-                      to={`/assessments/${assessment.id}`}
+                      href={`/coach/coach_journey/assessments/${assessment.id}`}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-purple-600 text-purple-600 rounded-xl text-sm font-semibold hover:bg-purple-50 transition shadow-sm"
                     >
                       <RefreshCw className="w-4 h-4" />

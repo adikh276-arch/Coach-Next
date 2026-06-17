@@ -25,14 +25,27 @@ import BigRocksExercise from "@/components/BigRocksExercise";
 import RockingChairExercise from "@/components/RockingChairExercise";
 import SmartGoalsExercise from "@/components/SmartGoalsExercise";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useRouter, useParams } from "next/navigation";
 
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '_').replace(/[^\w-]+/g, '');
 
 const Index = () => {
   const { t, i18n } = useTranslation();
-  const { areaId, exerciseSlug, learnIndex, resourceType } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+
+  const slug = (params.slug as string[]) || [];
+  
+  // Parse Next.js slug array into old variables
+  let areaId: string | undefined;
+  let exerciseSlug: string | undefined;
+  let learnIndex: string | undefined;
+  let resourceType: string | undefined;
+
+  if (slug.length >= 1) areaId = slug[0];
+  if (slug.length === 2 && slug[1] !== "learn" && slug[1] !== "resource") exerciseSlug = slug[1];
+  if (slug.length === 3 && slug[1] === "learn") learnIndex = slug[2];
+  if (slug.length === 3 && slug[1] === "resource") resourceType = slug[2];
 
   // Derive selected states from URL
   const selectedArea = areaId ? coachingAreas.find(a => a.id === areaId) || null : null;
@@ -45,30 +58,30 @@ const Index = () => {
   const selectedResource = (areaId && resourceType) ? { areaId, type: resourceType as any } : null;
 
   const handleAreaClick = (area: CoachingArea) => {
-    navigate(`/${area.id}`, { replace: true });
+    router.replace(`/coaching_areas/${area.id}`);
   };
 
   const handleExerciseClick = (exercise: Exercise) => {
     if (selectedArea) {
-      navigate(`/${selectedArea.id}/${slugify(exercise.title)}`, { replace: true });
+      router.replace(`/coaching_areas/${selectedArea.id}/${slugify(exercise.title)}`);
     }
   };
 
   const handleLearnClick = (areaId: string, lIdx: number) => {
-    navigate(`/${areaId}/learn/${lIdx}`, { replace: true });
+    router.replace(`/coaching_areas/${areaId}/learn/${lIdx}`);
   };
 
   const handleResourceClick = (areaId: string, rType: "tips" | "quotes" | "ebooks") => {
-    navigate(`/${areaId}/resource/${rType}`, { replace: true });
+    router.replace(`/coaching_areas/${areaId}/resource/${rType}`);
   };
 
   const handleBack = () => {
     if (exerciseSlug || learnIndex || resourceType) {
-      navigate(`/${areaId}`, { replace: true });
+      router.replace(`/coaching_areas/${areaId}`);
     } else if (areaId) {
-      navigate("/", { replace: true });
+      router.replace("/coaching_areas/");
     } else {
-      navigate("/", { replace: true });
+      router.replace("/coaching_areas/");
     }
   };
 

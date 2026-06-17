@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router';
+import Link from 'next/link';
 import { 
   TrendingUp, ChevronLeft, Sparkles, Activity, BarChart3, Info, 
   Target, Zap, Compass, LayoutDashboard
@@ -12,11 +12,11 @@ import {
 import { FOCUS_AREAS, calculateFocusAreaScores, calculateActualProgress } from '../data/assessmentData';
 import { useAssessments } from '../context/AssessmentContext';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 
 export function MyFocusAreas() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { assessmentResults, onboardingProgress, updateOnboardingProgress } = useAssessments();
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [mounted, setMounted] = useState(false);
@@ -220,7 +220,7 @@ export function MyFocusAreas() {
           <h3 className="text-2xl font-black text-slate-900 mb-2">{t('focus.emptyTitle')}</h3>
           <p className="text-sm text-slate-500 mb-8 max-w-md mx-auto">{t('focus.emptyDesc')}</p>
           <Link 
-            to="/assessments" 
+            href="/coach/coach_journey/assessments" 
             replace
             className="inline-flex items-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition shadow-xl"
           >

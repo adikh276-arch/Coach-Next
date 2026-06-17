@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Target, Plus, Trash2, Calendar, CheckCircle2, ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { sql } from '../../lib/db';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { ShareModal } from '@/components/ShareModal';
+import { getGoals, createGoal, updateGoal, deleteGoal } from '@/app/actions/goalActions';
 
 type GoalStatus = 'not-started' | 'in-progress' | 'completed';
 
@@ -20,7 +20,7 @@ interface Goal {
 
 export function MyGoals() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { userId } = useAuth();
   const [showShareModal, setShowShareModal] = useState(false);
 
@@ -44,16 +44,8 @@ export function MyGoals() {
   const fetchGoals = async () => {
     try {
       if (!userId) return;
-      const data = await sql`SELECT * FROM goals WHERE user_id = ${userId} ORDER BY created_at DESC;`;
-      // Convert database structure to component state
-      const mapped = data.map((row: any) => ({
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        status: row.status as GoalStatus,
-        deadline: row.deadline ? new Date(row.deadline).toISOString().split('T')[0] : undefined,
-      }));
-      setGoals(mapped);
+      const data = await getGoals(userId);
+      setGoals(data.map(g => ({ ...g, status: g.status as GoalStatus })));
     } catch (err) {
       console.error('Failed to fetch goals:', err);
     } finally {
@@ -62,12 +54,15 @@ export function MyGoals() {
   };
 
   const handleAddGoal = async () => {
-    if (newGoalTitle.trim()) {
+    if (newGoalTitle.trim() && userId) {
       try {
-        await sql`
-          INSERT INTO goals (user_id, title, description, status, deadline) 
-          VALUES (${userId}, ${newGoalTitle}, ${newGoalDescription}, ${newGoalStatus}, ${newGoalDeadline || null});
-        `;
+        await createGoal({
+          userId,
+          title: newGoalTitle,
+          description: newGoalDescription,
+          status: newGoalStatus,
+          deadline: newGoalDeadline || undefined,
+        });
         await fetchGoals();
         setNewGoalTitle('');
         setNewGoalDescription('');
@@ -82,7 +77,7 @@ export function MyGoals() {
 
   const handleDeleteGoal = async (id: string) => {
     try {
-      await sql`DELETE FROM goals WHERE id = ${id};`;
+      await deleteGoal(id, userId!);
       setGoals(goals.filter(goal => goal.id !== id));
     } catch (err) {
       console.error('Failed to delete goal', err);
@@ -91,9 +86,8 @@ export function MyGoals() {
 
   const handleUpdateStatus = async (id: string, status: GoalStatus) => {
     try {
-      // Optimistically update
       setGoals(goals.map(goal => goal.id === id ? { ...goal, status } : goal));
-      await sql`UPDATE goals SET status = ${status} WHERE id = ${id};`;
+      await updateGoal({ id, status, userId: userId! });
     } catch (err) {
       console.error('Failed to update goal status', err);
       await fetchGoals(); // revert on failure
@@ -109,7 +103,7 @@ export function MyGoals() {
       {/* Page Header */}
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate('/', { replace: true })}
+          onClick={() => router.push('/coach/coach_journey', { scroll: false })}
           className="p-2 rounded-xl hover:bg-slate-200 transition-colors text-slate-700 flex-shrink-0"
           aria-label="Go Back"
         >

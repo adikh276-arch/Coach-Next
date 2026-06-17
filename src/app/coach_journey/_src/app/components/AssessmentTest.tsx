@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Check, TrendingUp, RefreshCw } from 'lucide-react';
 import { ASSESSMENTS, AssessmentAnswer, FOCUS_AREAS, calculateFocusAreaScores } from '../data/assessmentData';
 import { useAssessments } from '../context/AssessmentContext';
@@ -9,8 +9,8 @@ import { ShareModal } from '@/components/ShareModal';
 
 export function AssessmentTest() {
   const { t } = useTranslation();
-  const { assessmentId } = useParams<{ assessmentId: string }>();
-  const navigate = useNavigate();
+  const { assessmentId } = useParams() as { assessmentId?: string };
+  const router = useRouter();
   const { addAssessmentResult, getLatestAssessmentResult } = useAssessments();
   
   const assessment = ASSESSMENTS.find(a => a.id === assessmentId);
@@ -179,7 +179,7 @@ export function AssessmentTest() {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
         <button
-          onClick={() => navigate('/assessments', { replace: true })}
+          onClick={() => router.push('/coach/coach_journey/assessments')}
           className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -329,13 +329,13 @@ export function AssessmentTest() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
-                  onClick={() => navigate('/', { replace: true })}
+                  onClick={() => router.push('/coach/coach_journey')}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-md"
                 >
                   {t('test.viewFocus')}
                 </button>
                 <button
-                  onClick={() => navigate('/assessments', { replace: true })}
+                  onClick={() => router.push('/coach/coach_journey/assessments')}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-purple-600 border-2 border-purple-600 rounded-xl font-semibold hover:bg-purple-50 transition"
                 >
                   {t('test.takeAnother')}
@@ -370,7 +370,7 @@ export function AssessmentTest() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <button
-        onClick={() => navigate('/assessments', { replace: true })}
+        onClick={() => router.push('/coach/coach_journey/assessments')}
         className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition"
       >
         <ArrowLeft className="w-5 h-5" />
