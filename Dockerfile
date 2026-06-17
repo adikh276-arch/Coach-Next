@@ -23,7 +23,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=80
 ENV HOSTNAME="0.0.0.0"
 
 # Copy Next.js standalone build which contains only the strictly required files and node_modules subsets
@@ -31,7 +31,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-EXPOSE 3000
+EXPOSE 80
 
 # Command to start the Next.js server using the optimized standalone entry point
 CMD ["node", "server.js"]
