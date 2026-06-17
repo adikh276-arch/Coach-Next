@@ -2,16 +2,16 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Disable Next.js telemetry and set production env
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 # Copy source
 COPY . .
-
-# Disable Next.js telemetry and set production env
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 
 # Build
 RUN npm run build
@@ -24,18 +24,12 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Copy package files and lockfile
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm install --only=production --legacy-peer-deps
-
-# Copy built public files and compiled standalone app
+# Copy Next.js standalone build which contains only the strictly required files and node_modules subsets
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/next.config.ts ./next.config.ts
 
 EXPOSE 3000
 
-# Command to start the Next.js server
-CMD ["npm", "run", "start"]
+# Command to start the Next.js server using the optimized standalone entry point
+CMD ["node", "server.js"]
