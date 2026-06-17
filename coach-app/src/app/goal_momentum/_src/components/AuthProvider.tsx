@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getUserId, setUserId, clearSession } from '@/lib/auth';
-import { sql } from '@/lib/db';
+import { syncUser } from '@/app/actions/userActions';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false);
@@ -62,7 +62,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         // 3. Database Initialization
         // We ensure the BIGINT user exists in the `users` table for foreign keys
         try {
-            await sql`INSERT INTO users (id) VALUES (${finalUserId}) ON CONFLICT DO NOTHING`;
+            await syncUser(finalUserId);
         } catch (dbErr) {
             console.error('Failed to initialize user in Neon schema:', dbErr);
             // This shouldn't crash the flow since they are authenticated.

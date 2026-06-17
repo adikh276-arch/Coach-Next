@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { sql } from '../lib/db';
+import { fetchUserGoals, fetchGoalEntries, addGoal as addGoalAction, deleteGoal as deleteGoalAction, saveGoalEntry } from '@/app/actions/goalActions';
 import { getUserId } from '../lib/auth';
 
 export interface DayEntry {
@@ -51,7 +51,8 @@ export function useGoalStore() {
     if (!userId) return; // Wait for AuthProvider
     setStore(prev => ({ ...prev, loading: true }));
     try {
-      const rawGoals = await sql`SELECT * FROM goals WHERE user_id = ${userId} ORDER BY created_at DESC`;
+      const goalsResult = await fetchUserGoals(userId);
+      const rawGoals = goalsResult.success && goalsResult.data ? goalsResult.data : [];
       const goals: Goal[] = rawGoals.map((g: any) => ({
         id: g.id,
         user_id: g.user_id,
@@ -60,9 +61,8 @@ export function useGoalStore() {
         createdAt: g.created_at
       }));
       
-      const entriesRaw = await sql`
-        SELECT * FROM goal_entries WHERE goal_id IN (SELECT id FROM goals WHERE user_id = ${userId}) ORDER BY date DESC
-      `;
+      const entriesResult = await fetchGoalEntries(userId);
+      const entriesRaw = entriesResult.success && entriesResult.data ? entriesResult.data : [];
 
       const entries: Record<string, DayEntry[]> = {};
       entriesRaw.forEach((e: any) => {
@@ -95,10 +95,9 @@ export function useGoalStore() {
 
   const addGoal = useCallback(async (name: string, category: string = 'learning') => {
     try {
-      const result = await sql`
-        INSERT INTO goals (user_id, name, category) VALUES (${userId}, ${name}, ${category}) RETURNING *
-      `;
-      const rawGoal = result[0];
+      const result = await addGoalAction({ userId: userId!, name, category });
+      if (!result.success || !result.data) throw new Error('Failed to add goal');
+      const rawGoal = result.data;
       const newGoal: Goal = {
         id: rawGoal.id,
         user_id: rawGoal.user_id,
@@ -120,7 +119,7 @@ export function useGoalStore() {
 
   const deleteGoal = useCallback(async (goalId: string) => {
     try {
-      await sql`DELETE FROM goals WHERE id = ${goalId}`;
+      await deleteGoalAction(goalId);
       setStore(prev => {
         const { [goalId]: _, ...rest } = prev.entries;
         return {
@@ -160,21 +159,20 @@ export function useGoalData(goalId: string, store: GoalStore, setStore: React.Di
 
   const save = useCallback(async () => {
     try {
-      const result = await sql`
-         INSERT INTO goal_entries (goal_id, date, drive, energy, focus, clarity, took_action, impact_level, action_note, blocker)
-         VALUES (${goalId}, ${todayKey}, ${todayEntry.drive}, ${todayEntry.energy}, ${todayEntry.focus}, ${todayEntry.clarity}, ${todayEntry.tookAction}, ${todayEntry.impactLevel}, ${todayEntry.actionNote}, ${todayEntry.blocker})
-         ON CONFLICT (goal_id, date) DO UPDATE SET
-           drive = EXCLUDED.drive,
-           energy = EXCLUDED.energy,
-           focus = EXCLUDED.focus,
-           clarity = EXCLUDED.clarity,
-           took_action = EXCLUDED.took_action,
-           impact_level = EXCLUDED.impact_level,
-           action_note = EXCLUDED.action_note,
-           blocker = EXCLUDED.blocker
-         RETURNING *
-      `;
-      const saved = result[0];
+      const result = await saveGoalEntry({
+        goalId,
+        dateKey: todayKey,
+        drive: todayEntry.drive,
+        energy: todayEntry.energy,
+        focus: todayEntry.focus,
+        clarity: todayEntry.clarity,
+        tookAction: todayEntry.tookAction,
+        impactLevel: todayEntry.impactLevel,
+        actionNote: todayEntry.actionNote,
+        blocker: todayEntry.blocker
+      });
+      if (!result.success || !result.data) throw new Error('Failed to save entry');
+      const saved = result.data;
 
       const updatedEntry: DayEntry = {
         id: saved.id,
