@@ -70,16 +70,8 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         
         // Ensure mock user exists in DB to satisfy Foreign Key constraints
         try {
-          const { sql } = await import("@/lib/db");
-          if (sql) {
-            await sql`
-              INSERT INTO users (id) 
-              VALUES (${mockUserId}) 
-              ON CONFLICT (id) DO NOTHING
-            `.catch((err) => {
-              console.warn("[AuthGuard] Mock DB initialization skipped (unreachable/offline):", err.message);
-            });
-          }
+          const { syncUser } = await import("@/app/actions/userActions");
+          await syncUser(mockUserId);
         } catch (dbErr) {
           console.error("[AuthGuard] Mock DB initialization failed:", dbErr);
         }
@@ -122,16 +114,8 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
 
               // DATABASE PERSISTENCE (neon): Initial User Initialization
               try {
-                const { sql } = await import("@/lib/db");
-                if (sql) {
-                  await sql`
-                    INSERT INTO users (id) 
-                    VALUES (${newUserId}) 
-                    ON CONFLICT (id) DO NOTHING
-                  `.catch((err) => {
-                    console.warn("[AuthGuard] DB initialization skipped (unreachable/offline):", err.message);
-                  });
-                }
+                const { syncUser } = await import("@/app/actions/userActions");
+                await syncUser(newUserId);
               } catch (dbErr) {
                 console.error("[AuthGuard] DB initialization failed:", dbErr);
                 // Non-fatal, allow UI to render

@@ -59,16 +59,8 @@ export default function RootPage() {
 
               // DATABASE PERSISTENCE (neon): Initial User Initialization
               try {
-                const { sql } = await import("@/lib/db");
-                if (sql) {
-                  await sql`
-                    INSERT INTO users (id) 
-                    VALUES (${uid}) 
-                    ON CONFLICT (id) DO NOTHING
-                  `.catch((err) => {
-                    console.warn("[RootPage] DB initialization skipped (unreachable/offline):", err.message);
-                  });
-                }
+                const { syncUser } = await import("@/app/actions/userActions");
+                await syncUser(uid);
               } catch (dbErr) {
                 console.error("[RootPage] DB initialization failed:", dbErr);
               }
