@@ -9,34 +9,33 @@ RUN npm install --legacy-peer-deps
 # Copy source
 COPY . .
 
-# Disable Next.js telemetry
+# Disable Next.js telemetry and set production env
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # Build
 RUN npm run build
 
 # ── Serve Stage ───────────────────────────────────────────────────────────────
-FROM nginx:alpine
-WORKDIR /usr/share/nginx/html
+FROM node:20-alpine AS runner
+WORKDIR /app
 
-# Create subpath directory
-RUN mkdir -p /usr/share/nginx/html/coach
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-# Copy the built output into the /coach/ subdirectory
-COPY --from=builder /app/out /usr/share/nginx/html/coach
+# Copy package files and lockfile
+COPY package*.json ./
 
-# Install nginx config
-RUN rm /etc/nginx/conf.d/default.conf
-COPY vite-nginx.conf /etc/nginx/conf.d/nginx.conf
+# Install only production dependencies
+RUN npm install --only=production --legacy-peer-deps
 
-# Install generator script for env config
-COPY generate-env-config.sh /usr/local/bin/generate-env-config.sh
-RUN chmod +x /usr/local/bin/generate-env-config.sh
+# Copy built public files and compiled standalone app
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
-# Ensure permissions
-RUN chmod -R 755 /usr/share/nginx/html/coach
+EXPOSE 3000
 
-EXPOSE 80
-
-# Run the generator script then start Nginx
-CMD ["/bin/sh", "-c", "/usr/local/bin/generate-env-config.sh && nginx -g 'daemon off;'"]
+# Command to start the Next.js server
+CMD ["npm", "run", "start"]

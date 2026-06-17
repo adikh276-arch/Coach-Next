@@ -1,7 +1,15 @@
-"use client";
+import ClientPage from "./ClientPage";
 
-import { AssessmentTest } from "../../_src/app/components/AssessmentTest";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return [
+    { assessmentId: 'emotional-intelligence' },
+    { assessmentId: 'strength-assessment' },
+    { assessmentId: 'leadership-potential' }
+  ];
+}
 
 export default function AssessmentTestPage() {
-  return <AssessmentTest />;
+  return <ClientPage />;
 }
