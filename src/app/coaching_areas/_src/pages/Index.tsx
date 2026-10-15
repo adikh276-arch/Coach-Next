@@ -59,28 +59,36 @@ const Index = () => {
   const selectedResource = (areaId && resourceType) ? { areaId, type: resourceType as any } : null;
 
   const handleAreaClick = (area: CoachingArea) => {
-    router.replace(`/coaching_areas/${area.id}`);
+    router.push(`/coaching_areas/${area.id}`);
   };
 
   const handleExerciseClick = (exercise: Exercise) => {
     if (selectedArea) {
-      router.replace(`/coaching_areas/${selectedArea.id}/${slugify(exercise.title)}`);
+      router.push(`/coaching_areas/${selectedArea.id}/${slugify(exercise.title)}`);
     }
   };
 
   const handleLearnClick = (areaId: string, lIdx: number) => {
-    router.replace(`/coaching_areas/${areaId}/learn/${lIdx}`);
+    router.push(`/coaching_areas/${areaId}/learn/${lIdx}`);
   };
 
   const handleResourceClick = (areaId: string, rType: "tips" | "quotes" | "ebooks") => {
-    router.replace(`/coaching_areas/${areaId}/resource/${rType}`);
+    router.push(`/coaching_areas/${areaId}/resource/${rType}`);
   };
 
   const handleBack = () => {
     if (exerciseSlug || learnIndex || resourceType) {
-      router.replace(`/coaching_areas/${areaId}`);
+      if (typeof window !== "undefined" && window.history.length > 1) {
+        window.history.back();
+      } else {
+        router.push(`/coaching_areas/${areaId}`);
+      }
     } else if (areaId) {
-      router.replace("/coaching_areas/");
+      if (typeof window !== "undefined" && window.history.length > 1) {
+        window.history.back();
+      } else {
+        router.push("/coaching_areas/");
+      }
     } else {
       handleExit();
     }

@@ -10,8 +10,17 @@ export function HandshakeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleAuth = async () => {
-      // 0. MOCK USER BYPASS (Localhost Testing Only)
-      if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      // 0. MOCK USER BYPASS (Localhost / LAN IP Mobile Testing)
+      const hn = window.location.hostname;
+      const isLocalOrDev = 
+        hn === "localhost" || 
+        hn === "127.0.0.1" || 
+        hn.startsWith("192.168.") || 
+        hn.startsWith("10.") || 
+        hn.startsWith("172.") || 
+        hn.endsWith(".local");
+
+      if (isLocalOrDev) {
         sessionStorage.setItem("user_id", "12345");
         await syncUser("12345").catch(console.error);
         setReady(true);
@@ -64,7 +73,8 @@ export function HandshakeProvider({ children }: { children: React.ReactNode }) {
     };
 
     handleAuth();
-  }, [pathname, searchParams]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!ready) {
     return (
