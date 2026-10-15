@@ -1,22 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ShareActivity } from "./ShareActivity";
+import { completeAndExit, handleExit } from "@/lib/navigation";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   title?: string;
   message?: string;
+  lessonId?: string;
+  onCompleteExit?: () => void;
 }
 
-const SuccessDialog = ({ open, onClose, title, message }: Props) => {
+const SuccessDialog = ({ open, onClose, title, message, lessonId, onCompleteExit }: Props) => {
   const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const displayTitle = title || t("common.thankYou", "Achievement Unlocked!");
   const displayMessage = message || t("common.entrySavedMessage", "Your progress has been recorded. Why not share your achievement with others?");
   const buttonText = t("common.gotIt", "Done");
+
+  const handleDone = async () => {
+    setIsSubmitting(true);
+    try {
+      if (onCompleteExit) {
+        onCompleteExit();
+      } else {
+        await completeAndExit(lessonId, onClose);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -84,9 +101,13 @@ const SuccessDialog = ({ open, onClose, title, message }: Props) => {
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={onClose}
-                className="w-full py-4 rounded-2xl bg-muted text-sm font-bold text-muted-foreground hover:bg-muted/80 transition-colors shadow-sm"
+                onClick={handleDone}
+                disabled={isSubmitting}
+                className="w-full py-4 rounded-2xl bg-primary text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
               >
+                {isSubmitting ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : null}
                 {buttonText}
               </motion.button>
             </div>

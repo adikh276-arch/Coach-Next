@@ -2,21 +2,13 @@
 
 import React from "react";
 import { ArrowLeft } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { handleExit } from "@/lib/navigation";
 
 export default function GlobalBackButton() {
-  const pathname = usePathname();
-
   return (
     <div className="fixed top-4 left-4 z-[60] flex items-center gap-2">
       <button
-        onClick={() => {
-          if (window.parent !== window) {
-            window.parent.postMessage({ action: 'exit' }, 'https://web.mantracare.com');
-          } else {
-            window.location.href = 'https://web.mantracare.com';
-          }
-        }}
+        onClick={() => handleExit()}
         className="flex items-center justify-center p-2 rounded-xl bg-white shadow-lg hover:bg-slate-50 transition-all border border-slate-200 group"
         aria-label="Exit to MantraCare"
         title="Exit"

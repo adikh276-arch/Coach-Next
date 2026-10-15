@@ -438,7 +438,15 @@ const ExerciseDetail = ({ template: originalTemplate, onBack, coachingAreaId, ex
           <CloudCheck className="h-3.5 w-3.5" /> {t("common.savedToCloud", "Response saved to cloud")}
         </p>
       )}
-      <SuccessDialog open={showSuccess} onClose={() => setShowSuccess(false)} />
+      <SuccessDialog 
+        open={showSuccess} 
+        lessonId={exerciseId || template.id}
+        onCompleteExit={() => {
+          setShowSuccess(false);
+          onBack();
+        }}
+        onClose={() => setShowSuccess(false)} 
+      />
     </motion.div>
   );
 };

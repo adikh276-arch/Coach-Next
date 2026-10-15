@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ChevronLeft } from "lucide-react";
+import { handleExit } from "@/lib/navigation";
 import { coachingAreas, type CoachingArea, type Exercise } from "@/data/coachingAreas";
 import { exerciseTemplates, exerciseTitleToTemplateId, specialExercises } from "@/data/exerciseTemplates";
 import { selfCareQuiz, selfCareCheckin } from "@/data/wellnessExercises";
@@ -81,7 +82,7 @@ const Index = () => {
     } else if (areaId) {
       router.replace("/coaching_areas/");
     } else {
-      router.replace("/coaching_areas/");
+      handleExit();
     }
   };
 
