@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft, Calendar, Video, FileText, TrendingUp, Clock, Users, Award, Star, MessageCircle, Phone, CheckCircle, ChevronRight, ChevronLeft, ChevronDown, ArrowRight, Play, BookOpen, Headphones, BarChart3, Sparkles, Heart, Wind, Brain, Activity, Smile, Target, Moon, Briefcase, Music, Circle, Sunrise, Waves, Coffee, ArrowUpRight, Library, Droplet, Scale, Gauge, Utensils, Weight, Box, GlassWater, CalendarDays, Baby, Ruler, NotebookPen, Cigarette, Zap, AlertCircle, Shield, UtensilsCrossed, PlayCircle, Check, Building2, ClipboardCheck, Eye, BarChart, Stethoscope, Microscope, HeartPulse, Bone, Ear, ScanEye, Syringe, UserCircle, Pill, Skull, Flame, TestTube, Droplets, Users2, BriefcaseMedical, FolderOpen, ShoppingBag, Headset, Flag, Route, Thermometer, Beer, Leaf, X, Pencil, User, BookOpenCheck, DollarSign, Calculator, Sparkle, Layers, ExternalLink } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Sidebar } from "./Sidebar";
@@ -40,12 +40,12 @@ const serviceDetails: Record<string, {
   color: string;
   stats: { value: string; label: string }[];
   pathways: { title: string; type: string; points: string; icon: string; duration?: string; completed?: boolean }[];
-  featureLinks?: { title: string; subtitle: string; iconType: "chat" | "brain" | "tracker" | "video" | "book" | "selfcare" | "pain" | "coachbook" | "diagnostics" | "pharmacy" }[];
+  featureLinks?: { title: string; subtitle: string; iconType: "chat" | "brain" | "tracker" | "video" | "book" | "selfcare" | "pain" | "coachbook" | "diagnostics" | "pharmacy"; link?: string }[];
   popularCategories?: { name: string; iconKey: "meditate" | "sleep" | "work" | "mental" | "soundscapes" | "pride" | "music" | "dailies" }[];
   yourFavorites?: { title: string; image: string }[];
-  trackers?: { label: string; iconKey: "glucose" | "weight" | "blood-pressure" | "calories" | "heart-rate" | "cholesterol" | "water" | "periods" | "mood" | "meal" | "pregnancy" | "sleep" | "bmi" | "journal" | "craving" | "energy" | "withdrawal" | "steps" | "heartbeat" | "assessment" | "watch" | "index"; grad: string; link?: string | null }[];
+  trackers?: { label: string; iconKey: "glucose" | "weight" | "blood-pressure" | "calories" | "heart-rate" | "cholesterol" | "water" | "periods" | "mood" | "meal" | "pregnancy" | "sleep" | "bmi" | "journal" | "craving" | "energy" | "withdrawal" | "steps" | "heartbeat" | "assessment" | "watch" | "index" | "spo2" | "temperature"; grad: string; link?: string | null }[];
   quickTools?: { label: string; Icon: any; grad: string; link: string | null }[];
-  specialties?: { name: string; Icon: any; grad: string }[];
+  specialties?: { name: string; Icon: any; grad: string; link?: string }[];
 }> = {
   "emotional-wellbeing": {
     name: "Emotional Wellbeing",
@@ -832,7 +832,7 @@ export function ServicePage() {
     );
   }
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -842,7 +842,7 @@ export function ServicePage() {
     }
   };
 
-  const item = {
+  const item: Variants = {
     hidden: { opacity: 0, y: 12 },
     show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
   };
@@ -1324,6 +1324,7 @@ export function ServicePage() {
                     titleColor: isDark ? "text-white" : "text-[#020817]",
                     subColor: isDark ? "text-slate-400" : "text-[#64748B]",
                     arrowColor: isDark ? "text-slate-300" : "text-[#27AE60]",
+                    arrowBg: isDark ? "bg-[#27AE60]/10" : "bg-[#D5F5E3]",
                     shadowColor: isDark ? "hover:shadow-none" : "hover:shadow-md",
                     badge: "Track",
                     badgeBg: isDark ? "bg-[#1E293B]/50 text-slate-300 border border-[#27AE60]/30" : "bg-[#D5F5E3] text-[#27AE60] border border-[#A9DFBF]",
@@ -1339,6 +1340,7 @@ export function ServicePage() {
                     titleColor: isDark ? "text-white" : "text-[#020817]",
                     subColor: isDark ? "text-slate-400" : "text-[#64748B]",
                     arrowColor: isDark ? "text-slate-300" : "text-[#FF9F43]",
+                    arrowBg: isDark ? "bg-[#FF9F43]/10" : "bg-[#FFF4E8]",
                     shadowColor: isDark ? "hover:shadow-none" : "hover:shadow-md",
                     badge: "Watch",
                     badgeBg: isDark ? "bg-[#1E293B]/50 text-slate-300 border border-[#FF9F43]/30" : "bg-[#FFF4E8] text-[#FF9F43] border border-[#FFE5CC]",
@@ -1354,6 +1356,7 @@ export function ServicePage() {
                     titleColor: isDark ? "text-white" : "text-[#020817]",
                     subColor: isDark ? "text-slate-400" : "text-[#64748B]",
                     arrowColor: isDark ? "text-slate-300" : "text-[#27AE60]",
+                    arrowBg: isDark ? "bg-[#27AE60]/10" : "bg-[#D5F5E3]",
                     shadowColor: isDark ? "hover:shadow-none" : "hover:shadow-md",
                     badge: "Read",
                     badgeBg: isDark ? "bg-[#1E293B]/50 text-slate-300 border border-[#27AE60]/30" : "bg-[#D5F5E3] text-[#27AE60] border border-[#A9DFBF]",
@@ -5480,7 +5483,7 @@ export function ServicePage() {
                   transition={{ duration: 0.3, delay: 0.1 + index * 0.02 }}
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`${t.cardBg} border ${t.border} rounded-xl md:rounded-2xl p-3 md:p-4 hover:border-[#00c0ff]/40 hover:shadow-lg transition-all group`}
+                  className={`${t.cardBg} border rounded-xl md:rounded-2xl p-3 md:p-4 hover:border-[#00c0ff]/40 hover:shadow-lg transition-all group`}
                 >
                   {/* Pain Image */}
                   <div className="w-full aspect-square bg-gradient-to-br from-[#f3faff] to-[#E0F2FE] rounded-lg md:rounded-xl flex items-center justify-center mb-2 md:mb-3 group-hover:from-[#E0F2FE] group-hover:to-[#BAE6FD] transition-all overflow-hidden">
