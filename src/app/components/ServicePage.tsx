@@ -115,7 +115,7 @@ const serviceDetails: Record<string, {
       { title: "Self Care Resources", subtitle: "Tools and guidance for your wellness journey", iconType: "selfcare" },
     ],
     quickTools: [
-      { label: "AI Role Play",      Icon: Users2,    grad: "#E74C3C", link: "https://platform\.mantracare.com/app/ai-role-play" },
+      { label: "AI Role Play",      Icon: Users2,    grad: "#E74C3C", link: "https://mantracoach.org/ai-roleplay/" },
       { label: "Assessment",         Icon: ClipboardCheck, grad: "#3498DB", link: "https://pridemantra.com/get-started/" },
       { label: "Pride Spectrum",     Icon: Sparkles,  grad: "#FF9F43", link: "https://platform\.mantracare.com/app/identity_spectrum" },
       { label: "Journal",            Icon: BookOpen,  grad: "#F39C12", link: "/journal" },
@@ -276,7 +276,7 @@ const serviceDetails: Record<string, {
       { label: "Assessment",      Icon: BarChart3, grad: "#3498DB", link: "https://app.mantracare.com/coachapp/assessments/" },
       { label: "Academy",         Icon: Library,   grad: "#FF9F43", link: "https://platform\.mantracare.com/app/mantracoach_academy/" },
       { label: "My Journey",       Icon: Route,     grad: "#27AE60", link: null },
-      { label: "AI Role Plays",   Icon: Target,    grad: "#9B59B6", link: "https://platform\.mantracare.com/app/roleplay-mantra/" },
+      { label: "AI Role Plays",   Icon: Target,    grad: "#9B59B6", link: "https://mantracoach.org/ai-roleplay/" },
       { label: "Vision Board",    Icon: Sparkles,  grad: "#E74C3C", link: "https://app.mantracare.org/coachapp/improvement-canvas/" },
     ],
     trackers: [
