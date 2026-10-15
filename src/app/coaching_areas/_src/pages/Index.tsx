@@ -224,8 +224,15 @@ const Index = () => {
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.25 }}
             >
-              <div className="relative flex items-center justify-center mb-8 px-2" dir="ltr">
-                <h1 className="text-2xl font-bold text-slate-900">{coachingAreasTitle}</h1>
+              <div className="relative flex items-center justify-between mb-8 px-2" dir="ltr">
+                <button
+                  onClick={handleBack}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-card coaching-card-shadow transition-all hover:coaching-card-shadow-hover border border-border/50"
+                  title={t("common.back", "Back")}
+                >
+                  <ChevronLeft className="h-5 w-5 text-foreground" />
+                </button>
+                <h1 className="text-2xl font-bold text-slate-900 flex-1 text-center pr-10">{coachingAreasTitle}</h1>
               </div>
               
               <p className="mb-8 text-center text-sm font-medium text-slate-500">

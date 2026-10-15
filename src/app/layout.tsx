@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import React, { Suspense } from "react";
 import AuthGate from "@/components/AuthGate";
-import GlobalBackButton from "@/components/GlobalBackButton";
 
 export const metadata: Metadata = {
   title: "MantraCoach",
@@ -23,7 +22,6 @@ export default function RootLayout({
       <body>
         <Suspense fallback={null}>
           <AuthGate>
-            <GlobalBackButton />
             {children}
           </AuthGate>
         </Suspense>
